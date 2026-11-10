@@ -1,410 +1,142 @@
-**DEVOIR #3**
-
-**MODULE 2 -- SCÉNARIO 5**
-
-Devoir d\'analyse -- Matrice des précipitations et de l\'exposition aux
-inondations
-
-*Logique de programmation, NumPy et simulation • Travail individuel*
-
-  -----------------------------------------------------------------------
-  **Informations**       
-  ---------------------- ------------------------------------------------
-  Nom et prénom          Bruno Jean David
-
-  Date                   9 novembre 2026
-
-  Module                 2
-
-  Scénario               5 -- Matrice des précipitations et de
-                         l\'exposition aux inondations \[CAS PRINCIPAL\]
-
-  Date de remise         9 novembre 2026
-  -----------------------------------------------------------------------
-
-# 1. Contexte du devoir
-
-Une semaine de fortes pluies a touché six communes côtières, de Gonaïves
-à Jacmel. Des stations météorologiques ont enregistré la pluie tombée
-chaque jour, et une enquête indique quelle part des ménages vit en zone
-inondable. L\'équipe de réduction des risques ne peut pas envoyer
-d\'inspecteurs partout en même temps : elle doit choisir où vérifier en
-premier les digues, les ravines et les abris.
-
-Vous êtes data scientist. En classe, vous avez construit le tableau
-NumPy des pluies (6 communes × 7 jours) et remplacé la valeur sentinelle
--999 par NaN : ce code se trouve dans le notebook fourni. Dans ce
-devoir, vous terminez le calcul : cumuls, maximum journalier, indice
-d\'exposition et liste des communes à vérifier en priorité. Vous rédigez
-ensuite un rapport pour l\'équipe de réduction des risques.
-
-**Données :** S05_pluie_7jours.csv (données synthétiques, disponibles
-sur Moodle). Unités : pluie en millimètres (mm) ; part des ménages en
-zone inondable entre 0 et 1.
-
-# 2. Méthodologie obligatoire
-
-1.  Télécharger le notebook et le fichier CSV sur Moodle (partie 3).
-
-2.  Ouvrir le notebook, aller au Scénario 5 et exécuter les cellules
-    déjà faites en classe. Sans Colab, suivre la partie 4.
-
-3.  Écrire vous-même le code qui complète l\'analyse (partie 6) et
-    produit les tableaux (partie 5).
-
-4.  Vérifier vos résultats avec vos deux contrôles assert.
-
-5.  Rédiger le rapport destiné à l\'équipe de réduction des risques
-    (partie 7).
-
-6.  Redémarrer le noyau et exécuter toutes les cellules dans l\'ordre
-    avant la remise.
-
-# 3. Fichiers fournis sur Moodle
-
-Deux fichiers sont fournis et disponibles sur la plateforme Moodle du
-cours :
-
-- **Le notebook du Module 2**
-  (Module_02_Logique_de_Programmation_et_NumPy_FR.ipynb) : il contient
-  le scénario 5 et le code déjà fait en classe (lecture des données,
-  tableau NumPy des pluies 6 × 7, remplacement de la valeur sentinelle
-  -999 par NaN, contrôle 1). Vous écrivez votre code à la suite, dans ce
-  notebook.
-
-- **Le fichier de données** S05_pluie_7jours.csv : une ligne par
-  commune, une colonne par jour (j1 à j7, pluie en mm) et la colonne
-  part_menages_zone_inondable (entre 0 et 1).
-
-Téléchargez les deux fichiers depuis Moodle. Dans Colab, ouvrez le
-notebook (**Fichier → Importer un notebook**), puis téléversez le
-fichier CSV quand la cellule files.upload() le demande.
-
-**Attention :** le code écrit en classe à la fin du scénario 5 contient
-des erreurs. Vérifiez chaque résultat avant de continuer (par exemple,
-un nombre de jours valides doit être un entier entre 0 et 7, et une
-colonne doit être appelée par son nom exact).
-
-# 4. Travailler sans Colab (VS Code ou PyCharm)
-
-Si vous ne pouvez pas utiliser Google Colab, faites le devoir sur votre
-ordinateur avec VS Code ou PyCharm.
-
-**Option A -- garder le notebook (recommandé)**
-
-1.  Dans Colab : **Fichier → Télécharger → Télécharger le fichier
-    .ipynb**.
-
-2.  Installer Python 3, puis dans un terminal : pip install pandas numpy
-    jupyter.
-
-3.  VS Code : installer les extensions **Python** et **Jupyter**, puis
-    ouvrir le fichier .ipynb. PyCharm : ouvrir directement le fichier
-    .ipynb.
-
-4.  Placer S05_pluie_7jours.csv dans le même dossier que le notebook.
-
-**Option B -- convertir le notebook en fichier .py**
-
-1.  Dans Colab : **Fichier → Télécharger → Télécharger le fichier .py**.
-    Ou, si Jupyter est installé : jupyter nbconvert \--to script
-    nom_du_notebook.ipynb.
-
-2.  Installer les bibliothèques : pip install pandas numpy.
-
-3.  Placer S05_pluie_7jours.csv dans le même dossier que le fichier .py,
-    puis exécuter : python nom_du_fichier.py (ou bouton ▶ Run).
-
-**Modifications obligatoires hors de Colab :**
-
-- Supprimer les lignes from google.colab import files et uploaded =
-  files.upload(). La ligne pd.read_csv(\"S05_pluie_7jours.csv\")
-  fonctionne telle quelle si le fichier est dans le même dossier.
-
-- Dans un fichier .py (option B) : remplacer display(\...) par
-  print(\...).
-
-# 5. Tableaux à produire (10 points)
-
-**Tableau A -- Table finale** resultat : une ligne par commune, triée de
-l\'indice d\'exposition le plus élevé au plus faible.
-
-  -------------------------------------------------------------------------------
-  **Colonne**                **Contenu (unité)**
-  -------------------------- ----------------------------------------------------
-  commune                    Nom de la commune
-
-  jours_valides              Nombre de jours avec une mesure valide (jours,
-                             entier de 0 à 7)
-
-  cumul_observe_mm           Pluie totale mesurée, en ignorant les valeurs
-                             manquantes (mm)
-
-  cumul_estime_7j_mm         Pluie estimée sur 7 jours, arrondie à 1 décimale
-                             (mm)
-
-  max_journalier_mm          Pluie maximale tombée en une seule journée (mm)
-
-  indice_exposition          Cumul estimé sur 7 jours × part des ménages en zone
-                             inondable, arrondi à 1 décimale
-
-  verification_prioritaire   True si cumul estimé \> 300 mm OU maximum journalier
-                             \> 100 mm, sinon False
-  -------------------------------------------------------------------------------
-
-*Recopiez votre table ci-dessous, ou insérez une capture d\'écran de sa
-sortie.*
-
-![](media/image1.png){width="6.5in" height="1.5263888888888888in"}
-
-**Tableau B -- Part du jour 4 dans le cumul de chaque commune (%)**
-
-  -----------------------------------------------------------------------
-  **commune**                                 **part_jour_4 (%)**
-  ----------------------------------- -----------------------------------
-  Gonaïves                                            33%
-
-  Saint-Marc                                          33%
-
-  Cabaret                                             33%
-
-  Léogâne                                             34%
-
-  Petit-Goâve                                         41%
-
-  Jacmel                                              32%
-  -----------------------------------------------------------------------
-
-# 6. Code qui complète l\'analyse (30 points)
-
-**Consigne :** dans le notebook, à la suite du code fait en classe,
-écrivez le code qui réalise les étapes suivantes. Chaque étape
-correspond à un commentaire de votre code.
-
-\# Nombre de jours avec une mesure valide, par commune
-
-\# Cumul observé en ignorant les NaN
-
-\# Cumul estimé sur 7 jours (hypothèse : jour manquant = moyenne des
-autres)
-
-\# Pluie maximale d\'une seule journée, par commune
-
-\# Part des ménages vivant en zone inondable (entre 0 et 1)
-
-\# Indice d\'exposition = pluie estimée (mm) × part des ménages exposés
-
-\# Broadcasting : diviser chaque ligne (6 × 7) par son cumul en colonne
-(6 × 1)
-
-\# Part du 4e jour (indice 3) dans le cumul de chaque commune, en %
-
-\# Contrôle 2 : recalcul à la main du cumul de Gonaïves
-
-\# Assembler la table finale à partir des tableaux calculés (indice
-arrondi)
-
-\# Règle : vérification prioritaire si \> 300 mm OU \> 100 mm/j
-
-\# Trier de l\'indice le plus élevé au plus faible et renuméroter
-
-\# Afficher la table finale
-
-------------------------------------------------------------------------
-
-**Utilisez obligatoirement :** l\'indice 3 pour le jour 4, .index() pour
-retrouver Gonaïves dans communes, et .round() pour arrondir (tableau B :
-0 décimale ; cumul estimé et indice d\'exposition : 1 décimale).
-
-**Commentez chaque ligne de votre code.**
-
-**Votre code (ou capture d\'écran des cellules et de leur sortie) :**
-
-+-----------------------------------------------------------------------+
-| \# Nombre de jours avec une mesure valide, par commune                |
-|                                                                       |
-| nb_jours_valides = (\~np.isnan(pluie)).sum(axis=1)                    |
-|                                                                       |
-| \# Cumul observé en ignorant les NaN                                  |
-|                                                                       |
-| cumul_obs = np.nansum(pluie, axis=1)                                  |
-|                                                                       |
-| \# Cumul estimé sur 7 jours (hypothèse : jour manquant = moyenne des  |
-| autres)                                                               |
-|                                                                       |
-| cumul_est = (cumul_obs / nb_jours_valides) \* 7                       |
-|                                                                       |
-| \# Pluie maximale d\'une seule journée, par commune                   |
-|                                                                       |
-| max_jour = np.nanmax(pluie, axis=1)                                   |
-|                                                                       |
-| \# Part des ménages vivant en zone inondable (entre 0 et 1)           |
-|                                                                       |
-| part_menages_inondable =                                              |
-| pluie_df\[\"part_menages_zone_inondable\"\].to_numpy()                |
-|                                                                       |
-| \# Indice d\'exposition = pluie estimée (mm) × part des ménages       |
-| exposés                                                               |
-|                                                                       |
-| ind_exposition = cumul_est \* part_menages_inondable                  |
-|                                                                       |
-|                                                                       |
-|                                                                       |
-| \# Broadcasting : diviser chaque ligne (6 × 7) par son cumul en       |
-| colonne (6 × 1)                                                       |
-|                                                                       |
-| part_par_jour_relative = pluie / cumul_obs\[:, np.newaxis\]           |
-|                                                                       |
-| \# Part du 4e jour (indice 3) dans le cumul de chaque commune, en %   |
-|                                                                       |
-| part_jour_4_pct = part_par_jour_relative\[:, 3\] \* 100               |
-|                                                                       |
-|                                                                       |
-|                                                                       |
-| \# Contrôle 2 : recalcul à la main du cumul de Gonaïves               |
-|                                                                       |
-| idx_gonaives = list(communes).index(\"Gonaïves\")                     |
-|                                                                       |
-| cumul_gonaives_main = np.nansum(pluie\[idx_gonaives\])                |
-|                                                                       |
-| assert np.isclose(cumul_gonaives_main, 293.0), f\"Erreur contrôle     |
-| cumul : {cumul_gonaives_main} au lieu de 293.0\"                      |
-|                                                                       |
-|                                                                       |
-|                                                                       |
-| \# Assembler la table finale à partir des tableaux calculés (indice   |
-| arrondi)                                                              |
-|                                                                       |
-| table_finale = pd.DataFrame({                                         |
-|                                                                       |
-|     \"commune\": communes,                                            |
-|                                                                       |
-|     \"jours_valides\": nb_jours_valides,                              |
-|                                                                       |
-|     \"cumul_observe_mm\": cumul_obs,                                  |
-|                                                                       |
-|     \"cumul_estime_7j_mm\": cumul_est.round(1),                       |
-|                                                                       |
-|     \"max_journalier_mm\": max_jour,                                  |
-|                                                                       |
-|     \"indice_exposition\": ind_exposition.round(1),                   |
-|                                                                       |
-|     \"part_jour_4_pct\": part_jour_4_pct.round(0).astype(int)         |
-|                                                                       |
-| })                                                                    |
-|                                                                       |
-| \# Règle : vérification prioritaire si \> 300 mm OU \> 100 mm/j       |
-|                                                                       |
-| table_finale\[\"verification_prioritaire\"\] =                        |
-| (table_finale\[\"cumul_observe_mm\"\] \> 300) \|                      |
-| (table_finale\[\"max_journalier_mm\"\] \> 100)                        |
-|                                                                       |
-| \# Trier de l\'indice le plus élevé au plus faible et renuméroter     |
-|                                                                       |
-| table_finale = table_finale.sort_values(by=\"indice_exposition\",     |
-| ascending=False).reset_index(drop=True)                               |
-|                                                                       |
-| \# Afficher la table finale                                           |
-|                                                                       |
-| display(table_finale)                                                 |
-|                                                                       |
-| ![](media/image2.png){width="6.5in" height="1.288888888888889in"}     |
-+-----------------------------------------------------------------------+
-
-# 7. Rapport à l\'équipe de réduction des risques (60 points)
-
-Rédigez un rapport d\'au moins **20 phrases**, accompagné des tableaux A
-et B et suivi d\'une section **Recommandations**. Le rapport s\'adresse
-à des personnes qui n\'ont pas besoin de connaître Python : expliquez ce
-que les résultats signifient pour la décision, pas comment le programme
-fonctionne.
-
-**À :** Équipe de réduction des risques et autorités communales
-
-**Objet :** Matrice des précipitations et de l\'exposition aux
+### Rapport d'analyse : Matrice des précipitations et de l'exposition aux inondations
+
+**À :** Équipe de réduction des risques et autorités communales\
+**De :** Analyste de données\
+**Objet :** Matrice des précipitations et de l'exposition aux
 inondations -- constats et recommandations
 
-**Partie 1 -- Analyse (au moins 20 phrases). Le texte doit :**
+#### Partie 1 -- Analyse
 
-- présenter le contexte, l\'objectif et les parties prenantes ;
+À la suite d'une semaine de fortes précipitations ayant durement touché
+six communes côtières du pays, allant de Gonaïves à Jacmel, il est
+devenu indispensable d'optimiser l'allocation des ressources de secours
+sur le terrain. L'objectif principal de ce rapport est d'identifier les
+zones géographiques prioritaires nécessitant une inspection immédiate
+des infrastructures de protection, telles que les digues, les ravines et
+les abris d'urgence. Cette démarche implique directement l'équipe de
+réduction des risques ainsi que les administrations municipales de
+chaque commune concernée comme principales parties prenantes de la
+sécurité civile.
 
-- expliquer le piège des données (la valeur -999) et comment il a été
-  traité ;
+Lors de l'analyse initiale des relevés météorologiques, un piège majeur
+a été détecté sous la forme d'une valeur aberrante de -999.0 mm au jour
+5 pour la station de Petit-Goâve. Cette valeur extrême représentait en
+réalité un code sentinelle utilisé par la station pour signaler une
+panne de capteur ou une absence temporaire de transmission. Si cette
+valeur avait été intégrée naïvement dans nos calculs, Petit-Goâve aurait
+présenté un cumul de pluie absurde et négatif de -696.0 mm, faussant
+ainsi totalement l'évaluation des risques. Pour corriger cette anomalie
+sans introduire de biais, nous avons neutralisé ce code en le déclarant
+comme une valeur manquante. Afin d'estimer de manière réaliste la
+pluviométrie totale sur 7 jours pour Petit-Goâve, le jour manquant a été
+comblé en lui attribuant la moyenne des 6 autres jours valides observés
+dans cette même commune.
 
-- intégrer les tableaux A et B, chacun avec un titre, et les commenter ;
+Le tableau A ci-dessous présente la synthèse des observations de
+pluviométrie collectées ainsi que le calcul de l'indice d'exposition
+pour chaque commune.
 
-- présenter des résultats chiffrés avec leur unité (mm, jours, %) ;
+##### Tableau A : Synthèse des précipitations, de l'exposition et niveau de priorité
 
-- expliquer ce que mesure l\'indice d\'exposition et classer les
-  communes ;
+  ----------------------------------------------------------------------------------------------------
+  Commune           Jours     Cumul     Cumul     Maximum      Part      Indice         Vérification
+                    valides   observé   estimé    journalier   ménages   d'exposition   prioritaire
+                              (mm)      sur 7j    (mm)         exposés                  
+                                        (mm)                   (%)                      
+  ----------------- --------- --------- --------- ------------ --------- -------------- --------------
+  **Cabaret**       7         335.0     335.0     110.0        41.0 %    137.4          **Oui**
 
-- identifier les communes à vérifier en priorité et expliquer la règle
-  utilisée (\> 300 mm ou \> 100 mm en un jour) ;
+  **Petit-Goâve**   6         303.0     353.5     124.0        38.0 %    134.3          **Oui**
 
-- commenter le poids du jour 4 dans la pluie de la semaine ;
+  **Gonaïves**      7         293.0     293.0     96.0         35.0 %    102.6          Non
 
-- mentionner au moins une limite (par exemple l\'estimation du jour
-  manquant) ;
+  **Léogâne**       7         218.0     218.0     75.0         30.0 %    65.4           Non
 
-- préciser que les données sont synthétiques.
+  **Saint-Marc**    7         263.0     263.0     88.0         22.0 %    57.9           Non
 
-**Partie 2 -- Recommandations.** Après l\'analyse, proposez au moins 3
-recommandations concrètes et priorisées (où envoyer les inspecteurs en
-premier, quoi vérifier, comment améliorer les données des stations...).
-Chaque recommandation doit s\'appuyer sur un résultat chiffré du
-rapport.
+  **Jacmel**        7         250.0     250.0     81.0         18.0 %    45.0           Non
+  ----------------------------------------------------------------------------------------------------
 
-Les tableaux et les recommandations ne comptent pas dans les 20 phrases.
+L'indice d'exposition calculé croise la sévérité du climat avec la
+vulnérabilité sociale locale. Plus précisément, cet indice multiplie le
+cumul de pluie estimé sur 7 jours par la part des ménages de la commune
+résidant dans des zones historiquement inondables. Grâce à cette
+méthodologie, nous pouvons classer objectivement les communes de la plus
+exposée à la moins exposée : Cabaret arrive en tête (indice de 137.4),
+suivie de très près par Petit-Goâve (134.3), puis Gonaïves (102.6),
+Léogâne (65.4), Saint-Marc (57.9) et enfin Jacmel (45.0).
 
-# 8. Éléments à remettre
+Pour déterminer quelles zones requièrent des inspections physiques
+immédiates, nous avons établi une règle de vérification prioritaire
+stricte. Une commune est classée comme hautement prioritaire si son
+cumul de pluie observé dépasse le seuil critique de 300 mm sur
+l'ensemble de la période, ou si elle a subi un événement de pluie
+extrême supérieur à 100 mm en une seule journée. En appliquant ces
+critères, Cabaret et Petit-Goâve sont les deux seules municipalités qui
+se qualifient pour une intervention d'urgence. Cabaret dépasse en effet
+simultanément les deux critères avec un cumul de 335.0 mm et un pic
+journalier de 110.0 mm. Petit-Goâve déclenche également cette alerte
+avec 303.0 mm accumulés et surtout le record de précipitation maximale
+de notre échantillon s'élevant à 124.0 mm en 24 heures.
 
-- Les tableaux A et B.
+L'analyse temporelle met par ailleurs en évidence un phénomène
+météorologique d'une intensité remarquable au cours du quatrième jour de
+la semaine. Le tableau B met en relief la part représentée par cette
+seule journée dans le bilan hydrologique global des différentes
+localités.
 
-- Le code commenté qui complète l\'analyse (recopié ou en capture
-  d\'écran), avec sa sortie.
+##### Tableau B : Poids relatif des précipitations du Jour 4 par commune
 
-- Le rapport : au moins 20 phrases + tableaux A et B + recommandations.
+  ------------------------------------------------------------------------
+  Commune              Pluie cumulée Jour 4 (mm) Part du Jour 4 dans le
+                                                 cumul (%)
+  -------------------- ------------------------- -------------------------
+  **Petit-Goâve**      124.0                     41 %
 
-- Le notebook fourni (ou le fichier .py), complété et exécuté du début à
-  la fin.
+  **Léogâne**          75.0                      34 %
 
-# 9. Vérification avant remise
+  **Saint-Marc**       88.0                      33 %
 
-☐ Ma table finale contient les 7 colonnes demandées et est triée par
-indice décroissant.
+  **Cabaret**          110.0                     33 %
 
-☐ Les nombres de jours valides sont des entiers entre 0 et 7.
+  **Gonaïves**         96.0                      33 %
 
-☐ J\'ai utilisé l\'indice 3 pour le jour 4, .index() pour Gonaïves et
-.round() pour arrondir.
+  **Jacmel**           81.0                      32 %
+  ------------------------------------------------------------------------
 
-☐ Mes deux contrôles assert passent, et chaque ligne de mon code est
-commentée.
+Ce quatrième jour a concentré à lui seul plus d'un tiers des
+précipitations totales de toute la semaine pour l'ensemble des communes
+de la région. À Petit-Goâve, cette concentration atteint un niveau
+extrême où une seule journée de tempête a représenté 41 % de l'eau reçue
+en sept jours.
 
-☐ Mon rapport contient au moins 20 phrases, les tableaux A et B, et au
-moins 3 recommandations.
+Malgré la solidité globale de notre modèle, certaines limites techniques
+doivent être gardées à l'esprit lors de la prise de décision. En
+particulier, l'estimation linéaire du jour manquant à Petit-Goâve
+suppose que la pluie y a été modérée ce jour-là, alors que la réalité
+terrain aurait pu présenter une sécheresse ou au contraire une autre
+tempête locale. De plus, il convient de souligner que toutes les données
+analysées ici sont synthétiques et ont été générées à des fins
+d'apprentissage.
 
-☐ Mon rapport présente des résultats chiffrés avec leurs unités.
+#### Partie 2 -- Recommandations
 
-☐ J\'ai exécuté tout le code dans l\'ordre avant la remise.
-
-# 10. Barème
-
-  -------------------------------------------------------------------------
-  **Critère**      **Détail**                                   **Points**
-  ---------------- ------------------------------------------- ------------
-  Tableaux         Tableaux A et B complets, colonnes               10
-                   correctes, valeurs exactes, tri correct     
-
-  Code             Calculs NumPy corrects (nansum, nanmax,          30
-                   broadcasting), indice 3, .index(),          
-                   .round(), contrôle 2, chaque ligne          
-                   commentée                                   
-
-  Rapport          Au moins 20 phrases, tableaux titrés et          60
-                   commentés, constats chiffrés, limite, au    
-                   moins 3 recommandations fondées sur les     
-                   résultats                                   
-
-  **Total**                                                      **100**
-  -------------------------------------------------------------------------
+1.  **Déploiement immédiat des inspecteurs de digues à Cabaret et
+    Petit-Goâve :** En raison d'un cumul observé dépassant les seuils
+    d'alerte (335.0 mm à Cabaret et 303.0 mm à Petit-Goâve), les équipes
+    techniques de génie civil doivent être dépêchées en priorité dans
+    ces deux communes sous 24 heures pour évaluer la résistance
+    structurelle des digues fluviales.
+2.  **Sécurisation des zones à fort taux d'exposition résidentielle :**
+    À Cabaret, où 41.0 % des ménages habitent en zone inondable, et à
+    Petit-Goâve (38.0 % d'exposition), il est crucial de valider la
+    viabilité des abris temporaires d'urgence et de préparer des plans
+    d'évacuation préventifs ciblés sur ces quartiers hautement
+    vulnérables.
+3.  **Modernisation et redondance du réseau de stations de mesure :**
+    Suite à la perte de données enregistrée au jour 5 à Petit-Goâve
+    (mesure absente compensée mathématiquement à 50.5 mm), il est
+    recommandé d'équiper la station locale de capteurs redondants et
+    d'une batterie de secours afin de garantir des séries de données
+    d'urgence complètes sans devoir recourir à des estimations
+    statistiques.
